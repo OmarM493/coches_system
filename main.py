@@ -1,4 +1,5 @@
 from coches import coches
+# from tkinter import Label,Entry,Button,Tk,messagebox,StringVar
 from tkinter import *
 from tkinter import messagebox
 
@@ -82,54 +83,77 @@ class App:
         self.id.focus()
         self.id.pack(pady=5)
 
-        self.btn_buscar=Button(self.ventana,text="Buscar",command=lambda:self.buscar_controller("eliminar")).pack(pady=5)
+        self.btn_buscar=Button(self.ventana,text="Buscar",command=lambda:self.buscar_controller("eliminar"))
+        self.btn_buscar.pack(pady=5)
 
-        self.btn_eliminar=Button(self.ventana,text="Eliminar", state="disabled", command=lambda:{self.eliminar_controller(),self.eliminar_view()}).pack(pady=10)
-        self.btn_eliminar().pack(pady=5)
+        self.btn_eliminar=Button(self.ventana,text="Eliminar", state="disabled", command=lambda:{self.eliminar_controller(),self.eliminar_view()})
+        self.btn_eliminar.pack(pady=5)
         Button(self.ventana,text="Regresar",command=self.menu_acciones).pack(pady=10)
+
 
     def modificar_view(self):
         self.borrarPantalla()
-        Label(self.ventana,text="... Ingresar el ID del Coche a Modificar...").pack(pady=10)
-        
+
+        self.var_marca=StringVar()
+        self.var_color=StringVar()
+        self.var_modelo=StringVar()
+        self.var_velocidad=StringVar()
+        self.var_potencia=StringVar()
+        self.var_asientos=StringVar()
+
+        Label(self.ventana,text="... Modificar datos del Coche ...").pack(pady=10)
+
         Label(self.ventana,text="ID").pack(pady=5)
         self.id=Entry(self.ventana)
         self.id.focus()
         self.id.pack(pady=5)
 
+        Button(self.ventana,text="Buscar",
+            command=lambda:self.buscar_controller("modificar")).pack(pady=5)
+
         Label(self.ventana,text="Nueva Marca").pack(pady=5)
-        self.marca=Entry(self.ventana)
+        self.marca=Entry(self.ventana,textvariable=self.var_marca)
         self.marca.pack(pady=5)
-        
+
         Label(self.ventana,text="Nuevo Color").pack(pady=5)
-        self.color=Entry(self.ventana)
+        self.color=Entry(self.ventana,textvariable=self.var_color)
         self.color.pack(pady=5)
-        
+
         Label(self.ventana,text="Nuevo Modelo").pack(pady=5)
-        self.modelo=Entry(self.ventana)
-        self.modelo.pack(pady=5)        
-        
+        self.modelo=Entry(self.ventana,textvariable=self.var_modelo)
+        self.modelo.pack(pady=5)
+
         Label(self.ventana,text="Nueva Velocidad").pack(pady=5)
-        self.velocidad=Entry(self.ventana)
+        self.velocidad=Entry(self.ventana,textvariable=self.var_velocidad)
         self.velocidad.pack(pady=5)
-        
+
         Label(self.ventana,text="Nueva Potencia").pack(pady=5)
-        self.potencia=Entry(self.ventana)
+        self.potencia=Entry(self.ventana,textvariable=self.var_potencia)
         self.potencia.pack(pady=5)
 
         Label(self.ventana,text="Nuevo Numero de asientos").pack(pady=5)
-        self.asientos=Entry(self.ventana)
+        self.asientos=Entry(self.ventana,textvariable=self.var_asientos)
         self.asientos.pack(pady=5)
 
-        Button(self.ventana,text="Guardar",command=lambda:{self.modificar_controller(),self.modificar_view()}).pack(pady=10)
+        self.btn_modificar=Button(
+            self.ventana,
+            text="Guardar",
+            state="disabled",
+            command=lambda:(self.modificar_controller(),self.modificar_view())
+        )
+        self.btn_modificar.pack(pady=10)
+
         Button(self.ventana,text="Regresar",command=self.menu_acciones).pack(pady=10)
+
 
     def consultar_view(self):
         self.borrarPantalla()
         Label(self.ventana,text="::: Consultar los Coches :::").pack(pady=10)
-        filas=""
-        filas=self.consultar_controller(filas)
-        Label(self.ventana,text=f"{'No':<20}{'ID':<20}{'Marca':<20}{'color':<20}{'Modelo':<20}{'Velocidad':20}{'potencia':<20}{'asientos':<20}").pack(pady=5)
+
+        filas=self.consultar_controller()
+
+        Label(self.ventana,text=filas,justify=LEFT).pack(pady=5)
+
         Button(self.ventana,text="Regresar",command=self.menu_acciones).pack(pady=5)
 
     def confirmacion_eliminar(self,tipo):
@@ -169,14 +193,27 @@ class App:
 
     def consultar_controller(self):
         registros=coches.Coches.consultar()
-        if len(registros) > 0:
-            num_coches = 1
+        filas=""
+
+        if len(registros)>0:
+            num_coches=1
+
             for fila in registros:
-                filas=filas+f"Coche # {num_coches}\n"f"\tID: {fila[0]}\n"f"\tMarca: {fila[1]}\n"f"\tColor: {fila[2]}\n"f"\tModelo: {fila[3]}\n"f"\tVelocidad: {fila[4]}\n"f"\tPotencia: {fila[5]}\n"f"\tAsientos: {fila[6]}"
-            num_coches += 1
-            self.esperarTecla()
+                filas+=f"Coche # {num_coches}\n"
+                filas+=f"\tID: {fila[0]}\n"
+                filas+=f"\tMarca: {fila[1]}\n"
+                filas+=f"\tColor: {fila[2]}\n"
+                filas+=f"\tModelo: {fila[3]}\n"
+                filas+=f"\tVelocidad: {fila[4]}\n"
+                filas+=f"\tPotencia: {fila[5]}\n"
+                filas+=f"\tAsientos: {fila[6]}\n\n"
+
+                num_coches+=1
+
         else:
-            print("\n\t No existen datos que mostrar por el momento... ")
+            filas="No existen datos que mostrar por el momento..."
+
+        return filas
 
     def modificar_controller(self):
         id=self.id.get()
@@ -190,7 +227,14 @@ class App:
         coche1=coches.Coches.buscar(id)
         if len(coche1)>0:
             messagebox.showinfo(title="...¡ Registro encontrado ¡...",message=f"...¡El registro fue encontrado con exito, puedes {tipo_accion} ¡...")
-            self.cambiar_estado_btn(True,tipo_accion)            
+            self.cambiar_estado_btn(True,tipo_accion)         
+            if tipo_accion=="modificar":
+                self.var_marca.set(coche1[0][1])
+                self.var_color.set(coche1[0][2])
+                self.var_modelo.set(coche1[0][3])
+                self.var_velocidad.set(coche1[0][4])
+                self.var_potencia.set(coche1[0][5])
+                self.var_asientos.set(coche1[0][6])
         else:
             messagebox.showerror(title="...¡ Verifique por favor ¡...",message=f"...¡El registro no fue encontrado, no es posible {tipo_accion} ¡...")
             self.cambiar_estado_btn(False,tipo_accion)            
