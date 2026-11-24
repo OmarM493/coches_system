@@ -96,9 +96,12 @@ class Coches:
                  False
      
      @staticmethod
+
      def buscar(id):
         try:
-             cursor.execute("SELECT * FROM coches WHERE id=%s", (id,))
-             return cursor.fetchall()
-        except:
-             return[]
+            cursor.execute("SELECT * FROM coches WHERE id=%s",(id,))
+            registros=cursor.fetchall()
+            return registros
+        except Exception as e:
+            print("Error al buscar:",e)
+            return []
