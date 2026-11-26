@@ -1,6 +1,6 @@
 from conexionBD import conexion,cursor
 
-class Coches:
+class CochesModel:
      def __init__(self,marca,color,modelo,velocidad,potencia,asientos):
         self._marca=marca
         self._color=color
@@ -96,9 +96,12 @@ class Coches:
                  False
      
      @staticmethod
+
      def buscar(id):
         try:
-             cursor.execute("select * from coches where id=$s",(id,))
-             return cursor.fetchall()
-        except:
-             return[]
+            cursor.execute("SELECT * FROM coches WHERE id=%s",(id,))
+            registros=cursor.fetchall()
+            return registros
+        except Exception as e:
+            print("Error al buscar:",e)
+            return []
